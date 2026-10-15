@@ -31,8 +31,25 @@ def train_epoch(
     model.train()
     
     for _, (X, y_true) in enumerate(train_loader):
-        # TODO: Fill the training loop here
-        pass
+        # X: (batch, 2)
+        # y: (batch, 1)
+        X = X.to(device)
+        y_true = y_true.to(device)
+
+        y_pred = model(X)
+        loss = loss_fn(y_pred, y_true)
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        total_loss += loss.item() * X.shape[0]
+        total_samples += X.shape[0]
+
+    if scheduler is not None:
+        scheduler.step()
+
+    return total_loss/total_samples
 
 def evaluate(
     model: nn.Module,
@@ -50,8 +67,23 @@ def evaluate(
     total = 0
 
     with torch.no_grad():
-        # TODO: Implement the evaluation function
-        pass
+        for _, (X, y_true) in enumerate(dataloader):
+            X = X.to(device)
+            y_true = y_true.to(device)
+
+            y_pred = model(X)
+            loss = loss_fn(y_pred, y_true)
+
+            losses += loss.item() * X.shape[0]
+
+            correct += (y_pred.round() == y_true).sum().item()
+            total += X.shape[0]
+
+    val_acc = correct/total
+    val_loss = losses/total
+
+    return val_acc, val_loss
+
         
 
 if __name__ == "__main__":
@@ -68,9 +100,8 @@ if __name__ == "__main__":
         output_activation=nn.Sigmoid()
     )
 
-    # TODO: Initialize these variables
-    loss_fn = None
-    optimizer = None
+    loss_fn = nn.BCELoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
     scheduler = None
 
     device = "cuda" if torch.cuda.is_available() else "cpu"

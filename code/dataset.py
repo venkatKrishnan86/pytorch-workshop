@@ -17,13 +17,13 @@ class MoonsDataset(Dataset):
             noise=noise,
             random_state=random_state,
         )
-        # TODO: Initialize the torch dataset
-        pass
+        # X_np: (n_samples, 2)
+        # y_np: (n_samples,)
+        self.X = torch.from_numpy(X_np.astype(np.float32))
+        self.y = torch.from_numpy(y_np.astype(np.float32)).unsqueeze(1) # (n_samples, 1)
 
     def __len__(self) -> int:
-        # TODO: Implement __len__
-        pass
+        return self.X.shape[0]
 
     def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
-        # TODO: Implement __getitem__
-        pass
+        return self.X[idx, :], self.y[idx]
