@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import os
 import numpy as np
 
-from dataset_nsfmlw import MoonsDataset
-from model_nsfmlw import MLP
+from dataset import MoonsDataset
+from model import MLP
 
 torch.manual_seed(0)
 np.random.seed(0)
